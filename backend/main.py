@@ -5,9 +5,9 @@ import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
-data = pd.read_csv("data/movies_metadata.csv", low_memory=False)
+data = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
 
-print(data.head())
+#print(data.head())
 
 #calculate weighted rating (imbd formula). demographical filtering
 
@@ -41,6 +41,9 @@ cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 indices = pd.Series(data.index, index=data["title"]).drop_duplicates()
 
 def get_recommendations(title, cosine_sim=cosine_sim):
+
+    print(title)
+    
     idx = indices[title]
 
     sim_scores = list(enumerate(cosine_sim[idx]))
@@ -51,6 +54,4 @@ def get_recommendations(title, cosine_sim=cosine_sim):
 
     movie_indices = [i[0] for i in sim_scores]
 
-    return data["title"].iloc[movie_indices]
-
-print(get_recommendations("The Avengers"))
+    return data["title"].groupby(data["title"].iloc[movie_indices]).head(10).tolist()
