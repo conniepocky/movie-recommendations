@@ -32,7 +32,7 @@ def index():
     if form.validate_on_submit():
         text = form.text.data
 
-        return redirect(url_for("movie", text=text))
+        return redirect(url_for("movie", text=text)) #todo, get movie by its id
 
     return render_template("index.html", form=form, message=message)
 
