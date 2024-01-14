@@ -9,6 +9,12 @@ data = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
 
 #print(data.head())
 
+def get_movie_id_by_title(title):
+    if data.loc[data["title"] == title].empty:
+        return "error"
+    else:
+        return data.loc[data["title"] == title]["id"].tolist()[0]
+
 #calculate weighted rating (imbd formula). demographical filtering
 
 C = data["vote_average"].mean()
@@ -40,9 +46,9 @@ cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
 indices = pd.Series(data.index, index=data["title"]).drop_duplicates()
 
-def get_recommendations(title, cosine_sim=cosine_sim):
+def get_recommendations(id, cosine_sim=cosine_sim):
 
-    print(title)
+    title = data.loc[data["id"] == id]["title"].tolist()[0]
     
     idx = indices[title]
 
@@ -54,4 +60,7 @@ def get_recommendations(title, cosine_sim=cosine_sim):
 
     movie_indices = [i[0] for i in sim_scores]
 
-    return data["title"].groupby(data["title"].iloc[movie_indices]).head(10).tolist()
+    try:
+        return data["title"].groupby(data["title"].iloc[movie_indices]).head(10).tolist()
+    except:
+        return ["No recommendations found"]
