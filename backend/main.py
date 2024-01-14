@@ -14,6 +14,13 @@ def get_movie_id_by_title(title):
         return "error"
     else:
         return data.loc[data["title"] == title]["id"].tolist()[0]
+    
+def get_movie_title_by_id(id):
+    return data.loc[data["id"] == id]["title"].tolist()[0]
+
+def get_movie_image_by_id(id): #todo fix this
+    poster_path = data.loc[data["id"] == id]["poster_path"].tolist()[0]
+    return "https://image.tmdb.org/t/p/w500" + poster_path
 
 #calculate weighted rating (imbd formula). demographical filtering
 
@@ -48,7 +55,7 @@ indices = pd.Series(data.index, index=data["title"]).drop_duplicates()
 
 def get_recommendations(id, cosine_sim=cosine_sim):
 
-    title = data.loc[data["id"] == id]["title"].tolist()[0]
+    title = get_movie_title_by_id(id)
     
     idx = indices[title]
 
