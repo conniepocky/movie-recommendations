@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import linear_kernel
 
 data = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
 
-#print(data.head())
+print(data.head(5))
 
 def get_movie_id_by_title(title):
     if data.loc[data["title"] == title].empty:
@@ -19,8 +19,17 @@ def get_movie_title_by_id(id):
     return data.loc[data["id"] == id]["title"].tolist()[0]
 
 def get_movie_image_by_id(id): #todo fix this
-    poster_path = data.loc[data["id"] == id]["poster_path"].tolist()[0]
-    return "https://image.tmdb.org/t/p/w500" + poster_path
+    isCollection = data.loc[data["id"] == id].belongs_to_collection.values
+    print(isCollection)
+    if pd.isna(isCollection):
+        poster_path = data.loc[data["id"] == id]["poster_path"].tolist()[0]
+    else:
+        d = eval(data.loc[data["id"] == id].belongs_to_collection.values[0])
+        print(d)
+        poster_path = d.get("poster_path")
+    return "https://image.tmdb.org/t/p/w500" + str(poster_path)
+
+print(get_movie_image_by_id("862"))
 
 #calculate weighted rating (imbd formula). demographical filtering
 

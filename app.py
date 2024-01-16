@@ -44,12 +44,15 @@ def movie(id):
 
     top_ten_rated_movies = get_recommendations(id)
 
-    movie = get_movie_title_by_id(id)
+    images = []
 
-    image = get_movie_image_by_id(id)
+    for i in top_ten_rated_movies:
+        images.append(get_movie_image_by_id(get_movie_id_by_title(i)))
+
+    movie = get_movie_title_by_id(id)
 
     print(top_ten_rated_movies)
 
-    return render_template("movie.html", top_ten_rated_movies=top_ten_rated_movies, movie=movie, image=image)
+    return render_template("movie.html", top_ten_rated_movies=top_ten_rated_movies, movie=movie, images=images)
 
 
