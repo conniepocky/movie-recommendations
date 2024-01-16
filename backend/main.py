@@ -27,7 +27,7 @@ def get_movie_image_by_id(id): #todo fix this
         d = eval(data.loc[data["id"] == id].belongs_to_collection.values[0])
         print(d)
         poster_path = d.get("poster_path")
-    return "https://image.tmdb.org/t/p/w500" + str(poster_path)
+    return "https://image.tmdb.org/t/p/w185" + str(poster_path)
 
 print(get_movie_image_by_id("862"))
 
