@@ -58,4 +58,5 @@ def movie(id):
 @app.route("/toprated")
 def toprated():
     top = get_best_movies()
+    print(top)
     return render_template("toprated.html", top_ten_rated_movies=top)

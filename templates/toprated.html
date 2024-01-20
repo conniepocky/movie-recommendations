@@ -14,7 +14,17 @@
 
       <h1 class="pt-5 pb-2">Top Movies according to IMDB rating system:</h1>
 
-      <h3>{{top_ten_rated_movies}}</h3>
+      {% for movie in top_ten_rated_movies %}
+
+        <div style="display: inline-table; padding: 14px; text-align: center;">
+            <h3 style="display: inline-block; padding: 14px; text-align: center; color:plum">{{movie[0]}}</h3>
+            <i>Score - {{movie[1]}}</i>
+            <br>
+            <p>{{movie[2]}}</p>
+                
+        </div>
+
+      {% endfor %}
 
     </div>
   </div>

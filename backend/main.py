@@ -48,10 +48,15 @@ q_movies["score"] = q_movies.apply(weighted_rating, axis=1)
 
 q_movies = q_movies.sort_values("score", ascending=False)  
 
-top_ten_rated_movies = q_movies[['title', 'vote_count', 'vote_average', 'score']].head(10)
+top_ten_rated_movies = q_movies[['title', 'vote_count', 'vote_average', 'score', "overview"]].head(10)
 
 def get_best_movies():
-    return top_ten_rated_movies["title"].tolist()
+    titles = top_ten_rated_movies["title"].tolist()
+    scores = top_ten_rated_movies["score"].tolist()
+    overview = top_ten_rated_movies["overview"].tolist()
+
+    
+    return [list(row) for row in zip(titles, scores, overview)]
 
 #plot based recommender
 
