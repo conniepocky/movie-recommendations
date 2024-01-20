@@ -53,6 +53,9 @@ top_ten_rated_movies = q_movies[['title', 'vote_count', 'vote_average', 'score',
 def get_best_movies():
     titles = top_ten_rated_movies["title"].tolist()
     scores = top_ten_rated_movies["score"].tolist()
+
+    scores = [round(num, 2) for num in scores]
+
     overview = top_ten_rated_movies["overview"].tolist()
 
     
