@@ -4,7 +4,7 @@
 {% block content %}
 
 <head>
-    <title>Spam Email Identification</title>
+    <title>Movie Recommendations</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
@@ -17,6 +17,12 @@
       <p>Enter your favourite movie below.</p>
 
       {{ render_form(form) }}
+
+      <hr>
+
+      <h1>Top 10 Highest Rated Movies</h1>
+
+      <a href="/toprated">Click here to see the top 10 highest rated movies.</a>
 
     </div>
   </div>

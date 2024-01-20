@@ -50,6 +50,9 @@ q_movies = q_movies.sort_values("score", ascending=False)
 
 top_ten_rated_movies = q_movies[['title', 'vote_count', 'vote_average', 'score']].head(10)
 
+def get_best_movies():
+    return top_ten_rated_movies["title"].tolist()
+
 #plot based recommender
 
 tfidf = TfidfVectorizer(stop_words="english")

@@ -9,7 +9,7 @@ import tensorflow_hub as hub
 import tensorflow as tf
 import numpy as np 
 
-from backend.main import get_recommendations, get_movie_id_by_title, get_movie_title_by_id, get_movie_image_by_id
+from backend.main import get_recommendations, get_movie_id_by_title, get_movie_title_by_id, get_movie_image_by_id, get_best_movies
 
 import secrets
 
@@ -55,4 +55,7 @@ def movie(id):
 
     return render_template("movie.html", top_ten_rated_movies=top_ten_rated_movies, movie=movie, images=images)
 
-
+@app.route("/toprated")
+def toprated():
+    top = get_best_movies()
+    return render_template("toprated.html", top_ten_rated_movies=top)
