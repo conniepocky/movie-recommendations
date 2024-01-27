@@ -4,8 +4,16 @@ import pandas as pd
 import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from ast import literal_eval
 
-data = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
+movies = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
+keywords = pd.read_csv("backend/data/keywords.csv", low_memory=False)
+
+movies.drop(columns=["imdb_id", "budget", "homepage", "status", "video"])
+
+keywords["id"] = keywords["id"].astype(str)
+
+data = movies.merge(keywords, on="id")
 
 print(data.head(5))
 
@@ -63,17 +71,7 @@ def get_best_movies():
 
 #plot based recommender
 
-tfidf = TfidfVectorizer(stop_words="english")
-
-data["overview"] = data["overview"].fillna("")
-
-tfidf_matrix = tfidf.fit_transform(data["overview"])
-
-cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-
-indices = pd.Series(data.index, index=data["title"]).drop_duplicates()
-
-def get_recommendations(id, cosine_sim=cosine_sim):
+def get_recommendations(id, cosine_sim):
 
     title = get_movie_title_by_id(id)
     
@@ -91,3 +89,48 @@ def get_recommendations(id, cosine_sim=cosine_sim):
         return data["title"].groupby(data["title"].iloc[movie_indices]).head(10).tolist()
     except:
         return ["No recommendations found"]
+
+#recommender
+    
+features = ["genres", "keywords"]
+
+for feature in features:
+    data[feature] = data[feature].apply(literal_eval)
+
+def get_list(x):
+    if isinstance(x, list):
+        names = [i['name'] for i in x]
+        #Check if more than 3 elements exist. If yes, return only first three. If no, return entire list.
+        if len(names) > 3:
+            names = names[:3]
+        return names
+
+    #Return empty list in case of missing/malformed data
+    return []
+
+for feature in features:
+    data[feature] = data[feature].apply(get_list)
+
+def clean_data(x):
+    if isinstance(x, list):
+        return [str.lower(i.replace(" ", "")) for i in x]
+        
+for feature in features:
+    data[feature] = data[feature].apply(clean_data)
+
+def create_soup(x):
+    return " ".join(x["genres"]) + " ".join(x["keywords"])
+
+data["soup"] = data.apply(create_soup, axis=1)
+
+tfidif = TfidfVectorizer(stop_words="english")
+
+count_matrix = tfidif.fit_transform(data["soup"])
+
+cosine_sim2 = linear_kernel(count_matrix, count_matrix)
+
+data = data.reset_index()
+
+indices = pd.Series(data.index, index=data["title"])
+
+print(get_recommendations("65", cosine_sim2))
