@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.stem.snowball import SnowballStemmer
 from sklearn.metrics.pairwise import linear_kernel
 from ast import literal_eval
 
@@ -92,6 +93,8 @@ def get_recommendations(id, cosine_sim):
 
 #recommender
     
+stemmer = SnowballStemmer("english")
+    
 features = ["genres", "keywords", "adult"]
 
 for feature in features:
@@ -107,10 +110,10 @@ def get_list(x):
     
     return []
 
-    #Return empty list in case of missing/malformed data
-
 for feature in ["genres", "keywords"]:
     data[feature] = data[feature].apply(get_list)
+
+data['keywords'] = data['keywords'].apply(lambda x: [stemmer.stem(i) for i in x]) #stem keywords
 
 def clean_data(x):
     if isinstance(x, list):
