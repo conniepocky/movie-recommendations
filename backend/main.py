@@ -92,7 +92,7 @@ def get_recommendations(id, cosine_sim):
 
 #recommender
     
-features = ["genres", "keywords"]
+features = ["genres", "keywords", "adult"]
 
 for feature in features:
     data[feature] = data[feature].apply(literal_eval)
@@ -104,22 +104,28 @@ def get_list(x):
         if len(names) > 3:
             names = names[:3]
         return names
-
-    #Return empty list in case of missing/malformed data
+    
     return []
 
-for feature in features:
+    #Return empty list in case of missing/malformed data
+
+for feature in ["genres", "keywords"]:
     data[feature] = data[feature].apply(get_list)
 
 def clean_data(x):
     if isinstance(x, list):
         return [str.lower(i.replace(" ", "")) for i in x]
+    else:
+        if isinstance(x, str):
+            return str.lower(x.replace(" ", ""))
+        else:
+            return ""
         
 for feature in features:
     data[feature] = data[feature].apply(clean_data)
 
 def create_soup(x):
-    return " ".join(x["genres"]) + " ".join(x["keywords"])
+    return " ".join(x["genres"]) + " ".join(x["keywords"]) + " " + x["adult"]
 
 data["soup"] = data.apply(create_soup, axis=1)
 
