@@ -9,12 +9,17 @@ from ast import literal_eval
 
 movies = pd.read_csv("backend/data/movies_metadata.csv", low_memory=False)
 keywords = pd.read_csv("backend/data/keywords.csv", low_memory=False)
+credits = pd.read_csv("backend/data/credits.csv", low_memory=False)
 
 movies.drop(columns=["imdb_id", "budget", "homepage", "status", "video"])
 
 keywords["id"] = keywords["id"].astype(str)
 
-data = movies.merge(keywords, on="id")
+credits["id"] = credits["id"].astype(str)
+
+df = movies.merge(keywords, on="id")
+
+data = df.merge(credits, on="id")
 
 print(data.head(5))
 
@@ -95,10 +100,24 @@ def get_recommendations(id, cosine_sim):
     
 stemmer = SnowballStemmer("english")
     
-features = ["genres", "keywords", "adult"]
+features = ["genres", "keywords", "adult", "cast"]
 
 for feature in features:
     data[feature] = data[feature].apply(literal_eval)
+
+def get_director(x):
+    for i in x:
+        if i['job'] == 'Director':
+            return i['name']
+    return np.nan
+
+data["crew"] = data["crew"].apply(literal_eval)
+
+data["director"] = data['crew'].apply(get_director)
+data['director'] = data['director'].astype('str').apply(lambda x: str.lower(x.replace(" ", "")))
+data['director'] = data['director'].apply(lambda x: [x,x, x])
+
+data.drop(columns=["crew"])
 
 def get_list(x):
     if isinstance(x, list):
@@ -110,7 +129,7 @@ def get_list(x):
     
     return []
 
-for feature in ["genres", "keywords"]:
+for feature in ["genres", "keywords", "cast"]:
     data[feature] = data[feature].apply(get_list)
 
 data['keywords'] = data['keywords'].apply(lambda x: [stemmer.stem(i) for i in x]) #stem keywords
@@ -123,12 +142,12 @@ def clean_data(x):
             return str.lower(x.replace(" ", ""))
         else:
             return ""
-        
+
 for feature in features:
     data[feature] = data[feature].apply(clean_data)
 
 def create_soup(x):
-    return " ".join(x["genres"]) + " ".join(x["keywords"]) + " " + x["adult"]
+    return " ".join(x["genres"]) + " ".join(x["keywords"]) + " " + x["adult"] + " ".join(x["cast"]) + " ".join(x["director"])
 
 data["soup"] = data.apply(create_soup, axis=1)
 
@@ -142,4 +161,4 @@ data = data.reset_index()
 
 indices = pd.Series(data.index, index=data["title"])
 
-print(get_recommendations("65", cosine_sim2))
+print(get_recommendations(get_movie_id_by_title("Toy Story"), cosine_sim2))

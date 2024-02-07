@@ -1,3 +1,5 @@
 __pycache__
 backend/__pycache__
 backend/data/keywords.csv
+backend/data/credits.csv
+backend/data/movies_metadata.csv
